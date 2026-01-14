@@ -14,7 +14,8 @@
     "build": "npm run build -w spa && npm run build -w mcp-server",
     "start": "npm run start -w mcp-server",
     "setup": "npm install && npm run setup -w mcp-server",
-    "benchmark": "node scripts/benchmark.js"
+    "benchmark": "node scripts/benchmark.js",
+    "generate-demo": "tsx scripts/generate-demo-images.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

@@ -48,8 +48,21 @@ export class ChartGenerator {
     const canvas = createCanvas(width, height)
     const ctx = canvas.getContext('2d')
 
-    // Apply background before chart rendering
-    await this.applyBackground(ctx, width, height, options)
+    // Store background options for later application
+    const hasBackground = !!(options.backgroundImagePrompt && this.ollamaClient)
+    let backgroundCanvas = null
+    if (hasBackground) {
+      // Create background on separate canvas first
+      const bgResult = await this.generateBackgroundImage(options.backgroundImagePrompt!, width, height)
+      if (bgResult) {
+        backgroundCanvas = bgResult.canvas
+        options.backgroundDescription = bgResult.description
+      }
+    }
+    
+    // Set default white background (will be covered by gradient if present)
+    ctx.fillStyle = options.backgroundColor || '#ffffff'
+    ctx.fillRect(0, 0, width, height)
 
     // Apply default colors if not provided
     const coloredData = this.applyDefaultColors(data, options.type)
@@ -96,12 +109,31 @@ export class ChartGenerator {
             }
           } : undefined,
           // Ensure chart area is transparent to show background
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          // Force transparent background for chart area
+          elements: {
+            arc: {
+              backgroundColor: undefined
+            }
+          },
+          // Make sure no default background is applied
+          layout: {
+            padding: 0
+          }
         }
       })
 
       // Give Chart.js time to render before capturing
       setTimeout(() => {
+        // Apply background AFTER Chart.js renders (composite behind)
+        if (backgroundCanvas) {
+          ctx.save()
+          ctx.globalCompositeOperation = 'destination-over' // Draw behind existing content
+          ctx.drawImage(backgroundCanvas, 0, 0, width, height)
+          ctx.restore()
+          console.log('[ChartGenerator] Background applied after chart render')
+        }
+        
         // Apply watermark: use background description if available, otherwise use watermarkPrompt
         // This implements "use background as watermark" - the background description becomes the watermark
         const watermarkText = options.backgroundDescription || options.watermarkPrompt
@@ -146,38 +178,8 @@ export class ChartGenerator {
   }
 
   /**
-   * Apply background to chart canvas
-   * Supports background images (generated via Ollama) or solid colors
-   * Stores the background description in options for watermark reuse
-   */
-  private async applyBackground(ctx: any, width: number, height: number, options: ChartOptions): Promise<void> {
-    // Set default background color
-    ctx.fillStyle = options.backgroundColor || '#ffffff'
-    ctx.fillRect(0, 0, width, height)
-
-    // If background image prompt is provided, generate and apply background image
-    if (options.backgroundImagePrompt && this.ollamaClient) {
-      try {
-        console.log('[ChartGenerator] Generating background image from prompt:', options.backgroundImagePrompt)
-        const backgroundResult = await this.generateBackgroundImage(options.backgroundImagePrompt, width, height)
-        if (backgroundResult) {
-          // Draw background image
-          ctx.drawImage(backgroundResult.canvas, 0, 0, width, height)
-          // Store the background description for watermark reuse
-          options.backgroundDescription = backgroundResult.description
-          console.log('[ChartGenerator] Background image applied successfully, description stored for watermark:', backgroundResult.description)
-        }
-      } catch (error) {
-        console.error('[ChartGenerator] Background image generation error:', error)
-        // Continue with solid color background if image generation fails
-      }
-    }
-  }
-
-  /**
-   * Generate a background image using Ollama
-   * Creates a simple gradient or pattern based on the prompt
-   * Returns both the canvas and the description for watermark reuse
+   * Generate background canvas (moved to be used after Chart.js renders)
+   * This method is now called separately to get the background canvas
    */
   private async generateBackgroundImage(prompt: string, width: number, height: number): Promise<{ canvas: any; description: string } | null> {
     try {
@@ -211,26 +213,61 @@ Respond with ONLY the description, no explanations.`
     }
   }
 
+
   /**
-   * Create a gradient background
+   * Create a gradient background with very light, professional colors
    */
   private createGradientBackground(ctx: any, width: number, height: number, description: string): void {
     const gradient = ctx.createLinearGradient(0, 0, width, height)
     
-    // Extract colors from description or use defaults
-    if (description.includes('blue')) {
-      gradient.addColorStop(0, 'rgba(240, 248, 255, 0.8)')
-      gradient.addColorStop(1, 'rgba(230, 240, 255, 0.8)')
-    } else if (description.includes('green')) {
-      gradient.addColorStop(0, 'rgba(240, 255, 240, 0.8)')
-      gradient.addColorStop(1, 'rgba(230, 255, 230, 0.8)')
-    } else if (description.includes('purple')) {
-      gradient.addColorStop(0, 'rgba(250, 245, 255, 0.8)')
-      gradient.addColorStop(1, 'rgba(240, 235, 255, 0.8)')
+    // Extract colors from description - using very light, professional pastel colors
+    const lowerDesc = description.toLowerCase()
+    
+    if (lowerDesc.includes('lavender')) {
+      // Very light lavender - professional and subtle
+      gradient.addColorStop(0, 'rgba(250, 245, 255, 1.0)')  // Almost white with lavender tint
+      gradient.addColorStop(0.5, 'rgba(245, 235, 255, 1.0)') // Light lavender
+      gradient.addColorStop(1, 'rgba(250, 240, 255, 1.0)')  // Very light lavender-white
+    } else if (lowerDesc.includes('mint')) {
+      // Very light mint green - fresh and professional
+      gradient.addColorStop(0, 'rgba(245, 255, 250, 1.0)')  // Almost white with mint tint
+      gradient.addColorStop(0.5, 'rgba(240, 255, 245, 1.0)') // Light mint
+      gradient.addColorStop(1, 'rgba(245, 255, 248, 1.0)')  // Very light mint-white
+    } else if (lowerDesc.includes('sky blue') || (lowerDesc.includes('sky') && lowerDesc.includes('blue'))) {
+      // Very light sky blue - calm and professional
+      gradient.addColorStop(0, 'rgba(240, 250, 255, 1.0)')  // Almost white with sky blue tint
+      gradient.addColorStop(0.5, 'rgba(235, 245, 255, 1.0)') // Light sky blue
+      gradient.addColorStop(1, 'rgba(240, 248, 255, 1.0)')  // Very light sky blue-white
+    } else if (lowerDesc.includes('peach')) {
+      // Very light peach - warm and professional
+      gradient.addColorStop(0, 'rgba(255, 250, 245, 1.0)')  // Almost white with peach tint
+      gradient.addColorStop(0.5, 'rgba(255, 245, 240, 1.0)') // Light peach
+      gradient.addColorStop(1, 'rgba(255, 248, 243, 1.0)')  // Very light peach-white
+    } else if (lowerDesc.includes('rose')) {
+      // Very light rose - elegant and professional
+      gradient.addColorStop(0, 'rgba(255, 248, 250, 1.0)')  // Almost white with rose tint
+      gradient.addColorStop(0.5, 'rgba(255, 242, 248, 1.0)') // Light rose
+      gradient.addColorStop(1, 'rgba(255, 245, 250, 1.0)')  // Very light rose-white
+    } else if (lowerDesc.includes('light blue') || lowerDesc.includes('blue')) {
+      // Very light blue - classic and professional
+      gradient.addColorStop(0, 'rgba(245, 250, 255, 1.0)')  // Almost white with blue tint
+      gradient.addColorStop(0.5, 'rgba(240, 248, 255, 1.0)') // Light blue
+      gradient.addColorStop(1, 'rgba(245, 250, 255, 1.0)')  // Very light blue-white
+    } else if (lowerDesc.includes('green')) {
+      // Very light green - fresh and professional
+      gradient.addColorStop(0, 'rgba(248, 255, 250, 1.0)')  // Almost white with green tint
+      gradient.addColorStop(0.5, 'rgba(245, 255, 248, 1.0)') // Light green
+      gradient.addColorStop(1, 'rgba(248, 255, 252, 1.0)')  // Very light green-white
+    } else if (lowerDesc.includes('purple')) {
+      // Very light purple - sophisticated and professional
+      gradient.addColorStop(0, 'rgba(250, 245, 255, 1.0)')  // Almost white with purple tint
+      gradient.addColorStop(0.5, 'rgba(248, 240, 255, 1.0)') // Light purple
+      gradient.addColorStop(1, 'rgba(250, 245, 255, 1.0)')  // Very light purple-white
     } else {
-      // Default subtle gradient
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)')
-      gradient.addColorStop(1, 'rgba(248, 250, 252, 0.95)')
+      // Default subtle white gradient
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)')
+      gradient.addColorStop(0.5, 'rgba(252, 252, 252, 1.0)')
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 1.0)')
     }
     
     ctx.fillStyle = gradient
