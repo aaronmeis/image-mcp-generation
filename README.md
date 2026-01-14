@@ -6,7 +6,8 @@ A single-page application for generating charts via a Model Context Protocol (MC
 
 [demo/README.md](demo/README.md)
 
-[video Demo](./demo.mp4)
+[Video Demo](./demo.gif)
+
 
 ## Features
 
