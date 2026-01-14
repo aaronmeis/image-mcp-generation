@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-01T00:00:00Z",
+  "prompts": {
+    "chat-system": {
+      "id": "chat-system-v1.0.0",
+      "file": "system-prompts.md#v100",
+      "version": "v1.0.0",
+      "description": "Main system prompt for chat interactions",
+      "active": true,
+      "experiments": []
+    },
+    "chart-generation": {
+      "id": "chart-gen-v1.0.0",
+      "file": "chart-prompts.md#v100",
+      "version": "v1.0.0",
+      "description": "Prompt for generating chart specifications from natural language",
+      "active": true,
+      "experiments": []
+    }
+  },
+  "experiments": {
+    "active": [],
+    "completed": [],
+    "config": {
+      "defaultSampleSize": 100,
+      "significanceThreshold": 0.05
+    }
+  },
+  "metrics": {
+    "tracked": [
+      "latency_ms",
+      "token_count",
+      "chart_success_rate",
+      "user_satisfaction"
+    ]
+  }
+}

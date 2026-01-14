@@ -1,0 +1,26 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "setup": "node scripts/check-deps.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "ollama": "^0.5.0",
+    "uuid": "^9.0.1",
+    "@napi-rs/canvas": "^0.1.65",
+    "chart.js": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/ws": "^8.5.10",
+    "@types/uuid": "^9.0.7",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
