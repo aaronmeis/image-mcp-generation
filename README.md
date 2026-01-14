@@ -2,6 +2,8 @@
 
 A single-page application for generating charts via a Model Context Protocol (MCP) server using Ollama.
 
+![MCP Chart Agent Architecture](./unnamed2.png) 
+
 ## Features
 
 - **Chat Interface**: Real-time streaming chat with an AI assistant
