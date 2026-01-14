@@ -6,6 +6,8 @@ A single-page application for generating charts via a Model Context Protocol (MC
 
 [demo/README.md](demo/README.md)
 
+[video Demo](./demo.mp4)
+
 ## Features
 
 - **Chat Interface**: Real-time streaming chat with an AI assistant
