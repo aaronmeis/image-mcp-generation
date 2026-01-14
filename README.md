@@ -4,6 +4,8 @@ A single-page application for generating charts via a Model Context Protocol (MC
 
 ![MCP Chart Agent Architecture](./unamed2.png) 
 
+[demo/README.md](demo/README.md)
+
 ## Features
 
 - **Chat Interface**: Real-time streaming chat with an AI assistant
