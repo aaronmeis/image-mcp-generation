@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Chart Agent - AI-Powered Data Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .features h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .charts-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .charts-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .chart-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .chart-card h3 {
+            color: #333;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .chart-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .cta-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #764ba2;
+        }
+
+        .btn-secondary:hover {
+            background: #5d3a7a;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 5%;
+            animation: zoomIn 0.3s;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #bbb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); }
+            to { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 MCP Chart Agent</h1>
+            <p>AI-powered data visualization tool that generates beautiful charts from natural language using Model Context Protocol (MCP) and Ollama</p>
+        </header>
+
+        <section class="features">
+            <h2>✨ Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🤖 Multi-Agent System</h3>
+                    <p>Three specialized AI agents work together: Chart Generation, Background Creation, and Watermark Integration</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💬 Natural Language</h3>
+                    <p>Create charts through conversational chat - just describe what you want and the AI generates it</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 Beautiful Visuals</h3>
+                    <p>Professional charts with custom backgrounds, watermarks, and multiple chart types (bar, line, pie, doughnut)</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Real-Time Streaming</h3>
+                    <p>Watch your charts generate in real-time with streaming responses and instant feedback</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📥 Export & Download</h3>
+                    <p>Download charts as PNG files and view underlying data in expandable tables</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 Open Source</h3>
+                    <p>Built with React, Node.js, WebSocket, Chart.js, and Ollama - fully customizable and extensible</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <h2>📈 Sample Charts</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 1rem;">
+                Examples of charts generated by the MCP Chart Agent with professional light color gradients
+            </p>
+            <div class="charts-grid">
+                <div class="chart-card" onclick="openModal('demo/01-bar-chart-quarterly-sales.png')">
+                    <img src="demo/01-bar-chart-quarterly-sales.png" alt="Bar Chart - Quarterly Sales">
+                    <h3>Bar Chart</h3>
+                    <p>Quarterly Sales 2024 - Light Blue Gradient</p>
+                </div>
+                <div class="chart-card" onclick="openModal('demo/02-line-chart-temperature-trend.png')">
+                    <img src="demo/02-line-chart-temperature-trend.png" alt="Line Chart - Temperature Trends">
+                    <h3>Line Chart</h3>
+                    <p>Temperature Trends 2024 - Lavender Gradient</p>
+                </div>
+                <div class="chart-card" onclick="openModal('demo/03-pie-chart-market-share.png')">
+                    <img src="demo/03-pie-chart-market-share.png" alt="Pie Chart - Market Share">
+                    <h3>Pie Chart</h3>
+                    <p>Market Share Distribution - Mint Green Gradient</p>
+                </div>
+                <div class="chart-card" onclick="openModal('demo/04-bar-chart-with-background.png')">
+                    <img src="demo/04-bar-chart-with-background.png" alt="Bar Chart with Background">
+                    <h3>Bar Chart</h3>
+                    <p>Product Sales - Sky Blue Gradient</p>
+                </div>
+                <div class="chart-card" onclick="openModal('demo/05-doughnut-chart-revenue.png')">
+                    <img src="demo/05-doughnut-chart-revenue.png" alt="Doughnut Chart - Revenue">
+                    <h3>Doughnut Chart</h3>
+                    <p>Revenue by Region - Peach Gradient</p>
+                </div>
+                <div class="chart-card" onclick="openModal('demo/06-line-chart-with-background.png')">
+                    <img src="demo/06-line-chart-with-background.png" alt="Line Chart with Background">
+                    <h3>Line Chart</h3>
+                    <p>Weekly Website Traffic - Rose Gradient</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>🚀 Get Started</h2>
+            <p style="color: #666; margin-bottom: 1rem;">
+                Explore the repository, read the documentation, or try it yourself
+            </p>
+            <div class="cta-buttons">
+                <a href="https://github.com/yourusername/image-mcp-generation" class="btn" target="_blank">
+                    📚 View Repository
+                </a>
+                <a href="README.md" class="btn btn-secondary">
+                    📖 Read Documentation
+                </a>
+                <a href="docs/ARCHITECTURE.md" class="btn btn-secondary">
+                    🏗️ View Architecture
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built with ❤️ using MCP, Ollama, React, and Chart.js</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">MIT License</p>
+        </footer>
+    </div>
+
+    <!-- Modal for image viewing -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageSrc;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
