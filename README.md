@@ -2,7 +2,7 @@
 
 A single-page application for generating charts via a Model Context Protocol (MCP) server using Ollama.
 
-![MCP Chart Agent Architecture](./unnamed2.png) 
+![MCP Chart Agent Architecture](./unamed2.png) 
 
 ## Features
 
